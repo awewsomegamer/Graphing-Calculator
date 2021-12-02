@@ -1,7 +1,13 @@
 #include <iostream>
+#include "../include/Window.h"
 
 int main(){
-	std::cout << "Hello World" << std::endl;
+	Window wind(500,500,"Hello OpenGL");
+
+	while (!wind.should_close()){
+		wind.update();
+		wind.render();
+	}
 
 	return 0;
 }
