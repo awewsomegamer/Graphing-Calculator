@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef LOG_H
 #define LOG_H
 
@@ -14,7 +16,6 @@ enum type {
 	WARNING,
 	FATAL
 };
-
 
 void log(std::string message, enum type t){
 	std::cout << "[" << e_names[t] << "] " << message << std::endl;
