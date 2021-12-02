@@ -3,14 +3,14 @@
 
 Window::Window(int w, int h, std::string title){
 	if (!glfwInit()){
-		LOG::log("Failed to initialize GLFW", LOG::FATAL);
+		log("Failed to initialize GLFW", FATAL);
 		exit(1);
 	}
 
 	window = glfwCreateWindow(w, h, title.c_str(), NULL, NULL);
 
 	if (window == 0){
-		LOG::log("Failed to create window", LOG::FATAL);
+		log("Failed to create window", FATAL);
 		exit(1);
 	}
 

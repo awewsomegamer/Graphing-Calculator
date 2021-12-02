@@ -1,4 +1,7 @@
 #include "../include/Interpreter.h"
+#include "../include/Log.h"
+
+lua_State* L;
 
 int draw_triangle(lua_State* L){
 	glBegin(GL_TRIANGLES);
@@ -23,7 +26,10 @@ Interpreter::Interpreter(){
 }
 
 bool validate(int result){
-	// Weird errors when trying to convert the last thing on the stack to a string with Lua.
+	if (result != LUA_OK){
+		log(lua_tostring(L, -1), ERROR);
+		return false;
+	}
 
 	return true;
 }

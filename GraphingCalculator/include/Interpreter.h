@@ -16,8 +16,6 @@ public:
 	Interpreter();
 	void run_file(std::string file);
 	void run_line(std::string line);
-private:
-	lua_State* L;
 };
 
 #endif
