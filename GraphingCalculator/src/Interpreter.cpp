@@ -23,7 +23,7 @@ Interpreter::Interpreter(){
 }
 
 bool validate(int result){
-	// Weird errors when trying to convert the last thing on the stack to a string with lua
+	// Weird errors when trying to convert the last thing on the stack to a string with Lua.
 
 	return true;
 }
