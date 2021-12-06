@@ -14,8 +14,8 @@ public:
 	void render();
 
 	bool should_close();
-private:
-	GLFWwindow* window;
+	int get_width();
+	int get_height();
 };
 
 #endif
