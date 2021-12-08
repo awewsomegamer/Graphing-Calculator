@@ -5,13 +5,13 @@ lua_State* L;
 
 int draw_triangle(lua_State* L){
 	glBegin(GL_TRIANGLES);
-		glVertex3f(0,1,0.2);
+		glVertex3f(0,0.5,0);
 		glColor3f(1,0,0);
 
-		glVertex3f(1,0,0.2);
+		glVertex3f(0.5,0,0);
 		glColor3f(0,1,0);
 
-		glVertex3f(-1,0,0.2);
+		glVertex3f(-0.5,0,0);
 		glColor3f(0,0,1);
 	glEnd();
 
@@ -28,7 +28,7 @@ Interpreter::Interpreter(){
 
 bool validate(int result){
 	if (result != LUA_OK){
-		log(lua_tostring(L, -1), ERROR);
+		log(lua_tostring(L, -1), LERROR);
 		return false;
 	}
 

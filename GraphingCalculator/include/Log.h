@@ -6,14 +6,20 @@
 #include <iostream>
 #include <string>
 
-
-enum type {
-	ERROR,
-	NORMAL,
-	WARNING,
-	FATAL
+enum type{
+	LERROR,
+	LNORMAL,
+	LWARNING,
+	LFATAL
 };
 
-void log(std::string message, enum type t);
+//enum type {
+//	ERROR = 0,
+//	NORMAL = 1,
+//	WARNING = 2,
+//	FATAL = 3
+//}
+
+void log(std::string message, type t);
 
 #endif

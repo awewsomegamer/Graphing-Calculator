@@ -22,14 +22,14 @@ Window::Window(int w, int h, std::string title){
 	ch = h;
 
 	if (!glfwInit()){
-		log("Failed to initialize GLFW", FATAL);
+		log("Failed to initialize GLFW", LFATAL);
 		exit(1);
 	}
 
 	window = glfwCreateWindow(w, h, title.c_str(), NULL, NULL);
 
 	if (window == 0){
-		log("Failed to create window", FATAL);
+		log("Failed to create window", LFATAL);
 		exit(1);
 	}
 
