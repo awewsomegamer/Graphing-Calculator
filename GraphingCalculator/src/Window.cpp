@@ -49,7 +49,7 @@ Window::Window(int w, int h, std::string title){
 }
 
 void Window::update(){
-	glClearColor(0.1, 0.5, 1, 1);
+	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glfwPollEvents();

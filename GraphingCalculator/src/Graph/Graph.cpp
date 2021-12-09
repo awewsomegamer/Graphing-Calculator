@@ -1,10 +1,12 @@
 #include "../../include/Graph/Graph.h"
 #include "../../include/Log.h"
 #include "../../include/Interpreter.h"
+#include <math.h>
 
 using namespace std;
 
-double ct = .1;
+double scale = 0.1; //16.125;
+const double fineness = 0.01;
 
 Interpreter i;
 int total_x = 10;
@@ -21,28 +23,26 @@ void Graph::update(int w, int h){
 
 void Graph::plot_smooth_lines(std::string function, int mode){
 	glBegin(mode);
-	for (int x = -total_x+1; x < total_x; x++){
-		glColor3f(0,0,0);
+	for (double x = -total_x+1; x < total_x; x+=fineness){
 		Graph::Point point = Graph::get_point(function, x);
 
-		glVertex3d(x/ct, (double)(point.y/ct), 0);
+		glColor3f(x,point.y,0.5);
+		glVertex3d(x/sin(scale), (double)(point.y/sin(scale)), 0);
 	}
 	glEnd();
 
-	ct = 32.5;
+	scale += 0.1;
 }
 
 void Graph::plot_rough_lines(std::string function){
 	glBegin(GL_LINES);
-	for (int x = -total_x+1; x < total_x; x++){
-		glColor3f(0,0,0);
+	for (double x = -total_x+1; x < total_x; x+=fineness){
+		glColor3f(0.5,0.5,0.5);
 		Graph::Point point = Graph::get_point(function, x);
 
-		glVertex3d(x/ct, (double)(point.y/ct), 0);
+		glVertex3d(x/scale, (double)(point.y/scale), 0);
 	}
 	glEnd();
-
-	ct = 32.5;
 }
 
 
