@@ -5,7 +5,7 @@
 
 using namespace std;
 
-double scale = 0.1; //16.125;
+double scale = 1;
 const double fineness = 0.01;
 
 Interpreter i;
@@ -27,11 +27,9 @@ void Graph::plot_smooth_lines(std::string function, int mode){
 		Graph::Point point = Graph::get_point(function, x);
 
 		glColor3f(x,point.y,0.5);
-		glVertex3d(x/sin(scale), (double)(point.y/sin(scale)), 0);
+		glVertex3d(x, (double)(point.y), 0);
 	}
 	glEnd();
-
-	scale += 0.1;
 }
 
 void Graph::plot_rough_lines(std::string function){

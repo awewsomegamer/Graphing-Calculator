@@ -8,7 +8,7 @@
 using namespace std;
 
 double it = 0;
-
+double e = 1;
 //double rc = 0;
 //double gc = 0;
 //double bc = 0;
@@ -27,7 +27,7 @@ int main(){
 	while (!wind.should_close()){
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		glOrtho(wind.get_width(),wind.get_width(), wind.get_height(), wind.get_height(), 1, 1000000);
+		glOrtho(-100,-100,-100,-100, 1, 1000000);
 		glMatrixMode(GL_MODELVIEW);
 
 		glPushMatrix();
@@ -37,12 +37,13 @@ int main(){
 		g.update(wind.get_width(), wind.get_height());
 
 
-		glRotated(it, 1, 1, 1);
-
+		glRotated(sin(it), 1, 0, 1);
+		glScaled(0.5,0.5,0);
 //		g.plot_smooth_lines("y = math.pow(x,2)", GL_TRIANGLE_FAN);
 //		g.plot_smooth_lines("y = -math.pow(x,2)", GL_TRIANGLE_STRIP);
-
-		g.plot_smooth_lines("y = math.pow(x,2)", GL_TRIANGLE_STRIP);
+//
+//		g.plot_smooth_lines("y = math.pow(x,3)", GL_TRIANGLE_STRIP);
+		g.plot_smooth_lines("y = math.pow(x+"+to_string(0)+","+to_string(e)+")", GL_TRIANGLE_STRIP);
 
 //		for (double y = -1; y < 1; y+=0.1){
 //			for (double x = -1; x < 1; x+=0.1){
@@ -63,7 +64,7 @@ int main(){
 //				glEnd();
 //			}
 //		}
-
+//
 		glBegin(GL_LINES);
 			glColor3f(1,1,1);
 			glVertex3f(0,1,0);
@@ -80,27 +81,10 @@ int main(){
 			glVertex3f(-1,0,0);
 		glEnd();
 
-		glRotated(-it, 1, 1, 1);
-//		it++;
-
-//		if (rc <= 1)
-//			rc+=0.1;
-//
-//		if (rc >=1 && gc <= 1)
-//			gc+=0.1;
-//
-//		if (gc >= 1 && bc <= 1)
-//			bc+=0.1;
-//
-//		if (rc + gc + bc >= 3){
-//			rc = 0;
-//			gc = 0;
-//			bc = 0;
-//		}
-
-
-
-
+		glScaled(-0.5,-0.5,0);
+		glRotated(-sin(it), 1, 0, 1);
+		it+=0.1;
+		e+=0.01;
 
 		wind.render();
 
