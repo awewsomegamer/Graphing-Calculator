@@ -9,9 +9,8 @@ using namespace std;
 
 double it = 0;
 double e = 1;
-//double rc = 0;
-//double gc = 0;
-//double bc = 0;
+double s  = 1;
+
 
 int main(){
 	Window wind(500, 500, "Hello OpenGL");
@@ -38,7 +37,7 @@ int main(){
 
 
 		glRotated(sin(it), 1, 0, 1);
-		glScaled(0.5,0.5,0);
+		glScaled(s,s,0);
 //		g.plot_smooth_lines("y = math.pow(x,2)", GL_TRIANGLE_FAN);
 //		g.plot_smooth_lines("y = -math.pow(x,2)", GL_TRIANGLE_STRIP);
 //
@@ -81,10 +80,12 @@ int main(){
 			glVertex3f(-1,0,0);
 		glEnd();
 
-		glScaled(-0.5,-0.5,0);
+		glScaled(-s,-s,0);
 		glRotated(-sin(it), 1, 0, 1);
 		it+=0.1;
 		e+=0.01;
+		s-=0.01;
+		cout << s << endl;
 
 		wind.render();
 
