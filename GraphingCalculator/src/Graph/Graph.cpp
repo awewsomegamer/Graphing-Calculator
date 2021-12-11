@@ -74,14 +74,14 @@ Graph::Point Graph::get_point(string f, double x){
 
 	lua_pop(i.get_state(), -1);
 
-	double colors[3];
-
-	lua_getglobal(i.get_state(), "c");
-	if (lua_istable(i.get_state(),-1)){
-		std::cout << lua_tonumber(i.get_state(), 1) <<
-				lua_tonumber(i.get_state(),1) <<
-				lua_tonumber(i.get_state(), 1) << std::endl;
-	}
+//	double colors[3];
+//
+//	lua_getglobal(i.get_state(), "c");
+//	if (lua_istable(i.get_state(),-1)){
+//		std::cout << lua_tonumber(i.get_state(), 1) <<
+//				lua_tonumber(i.get_state(),1) <<
+//				lua_tonumber(i.get_state(), 1) << std::endl;
+//	}
 
 	Graph::Point p = {x,y};
 
