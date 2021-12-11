@@ -2,11 +2,12 @@
 #include "../../include/Log.h"
 #include "../../include/Interpreter.h"
 #include <math.h>
+#include <iostream>
 
 using namespace std;
 
 double scale = 1;
-const double fineness = 0.01;
+const double fineness = 0.05;
 
 Interpreter i;
 int total_x = 10;
@@ -21,27 +22,32 @@ void Graph::update(int w, int h){
 	total_y = h/100;
 }
 
-void Graph::plot_smooth_lines(std::string function, int mode){
+
+void Graph::plot(std::string function, int mode){
 	glBegin(mode);
+
 	for (double x = -total_x+1; x < total_x; x+=fineness){
-		Graph::Point point = Graph::get_point(function, x);
+		Graph::Point point = Graph::get_point(function, (float)x);
 
 		glColor3f(x,point.y,0.5);
 		glVertex3d(x, (double)(point.y), 0);
 	}
+
 	glEnd();
 }
 
-void Graph::plot_rough_lines(std::string function){
-	glBegin(GL_LINES);
-	for (double x = -total_x+1; x < total_x; x+=fineness){
-		glColor3f(0.5,0.5,0.5);
-		Graph::Point point = Graph::get_point(function, x);
 
-		glVertex3d(x/scale, (double)(point.y/scale), 0);
-	}
-	glEnd();
-}
+//
+//void Graph::plot_rough_lines(std::string function){
+//	glBegin(GL_LINES);
+//	for (double x = -total_x+1; x < total_x; x+=fineness){
+//		glColor3f(0.5,0.5,0.5);
+//		Graph::Point point = Graph::get_point(function, (float)x);
+//
+//		glVertex3d(x/scale, (double)(point.y/scale), 0);
+//	}
+//	glEnd();
+//}
 
 
 int Graph::get_total_x(){
@@ -53,12 +59,10 @@ int Graph::get_total_y(){
 }
 
 Graph::Point Graph::get_point(string f, double x){
-	string ff = "x = ";
-	ff += to_string(x);
-	ff += "\n";
-	ff += f;
+	lua_pushnumber(i.get_state(), x);
+	lua_setglobal(i.get_state(), "x");
 
-	i.run_line(ff);
+	i.run_line(f);
 
 	lua_getglobal(i.get_state(), "y");
 
@@ -66,6 +70,17 @@ Graph::Point Graph::get_point(string f, double x){
 
 	if (lua_isnumber(i.get_state(), -1)){
 		y = (double)lua_tonumber(i.get_state(), -1);
+	}
+
+	lua_pop(i.get_state(), -1);
+
+	double colors[3];
+
+	lua_getglobal(i.get_state(), "c");
+	if (lua_istable(i.get_state(),-1)){
+		std::cout << lua_tonumber(i.get_state(), 1) <<
+				lua_tonumber(i.get_state(),1) <<
+				lua_tonumber(i.get_state(), 1) << std::endl;
 	}
 
 	Graph::Point p = {x,y};

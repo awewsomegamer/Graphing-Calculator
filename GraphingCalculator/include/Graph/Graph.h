@@ -8,13 +8,15 @@ public:
 	struct Point{
 		double x;
 		double y;
+		double r;
+		double g;
+		double b;
 	};
 
 	Graph();
 
 	void update(int w, int h);
-	void plot_smooth_lines(std::string function, int mode);
-	void plot_rough_lines(std::string function);
+	void plot(std::string function, int mode);
 
 	int get_total_x();
 	int get_total_y();

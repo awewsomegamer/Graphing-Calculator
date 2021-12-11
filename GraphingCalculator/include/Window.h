@@ -14,8 +14,10 @@ public:
 	void render();
 
 	bool should_close();
+	bool get_key(int key);
 	int get_width();
 	int get_height();
+
 };
 
 #endif

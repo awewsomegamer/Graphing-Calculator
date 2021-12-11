@@ -3,6 +3,8 @@
 
 GLFWwindow* window;
 
+bool keys[GLFW_KEY_LAST];
+
 int cw = 500;
 int ch = 500;
 
@@ -13,8 +15,13 @@ void window_size_callback(GLFWwindow* window, int w, int h){
 	glViewport(0,0,w,h);
 }
 
+void keyboard_callback(GLFWwindow* window, int key, int scan, int action, int mods){
+	keys[key] = (action != GLFW_RELEASE);
+}
+
 void make_callbacks(){
 	glfwSetWindowSizeCallback(window, window_size_callback);
+	glfwSetKeyCallback(window, keyboard_callback);
 }
 
 Window::Window(int w, int h, std::string title){
@@ -61,6 +68,10 @@ void Window::render(){
 
 bool Window::should_close(){
 	return glfwWindowShouldClose(window);
+}
+
+bool Window::get_key(int key){
+	return keys[key];
 }
 
 int Window::get_width(){
