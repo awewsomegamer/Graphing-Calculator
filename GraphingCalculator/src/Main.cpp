@@ -84,7 +84,9 @@ int main(){
 		glRotated(-sin(it), 1, 0, 1);
 		it+=0.1;
 		e+=0.01;
-		s-=0.01;
+		if (s > 0.001)
+			s-=0.001;
+
 		cout << s << endl;
 
 		wind.render();
