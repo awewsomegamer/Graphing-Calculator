@@ -18,12 +18,28 @@ int draw_triangle(lua_State* L){
 	return 0;
 }
 
+int factorial(lua_State* L){
+	int number = lua_tonumber(L, -1);
+
+	int fact = 1;
+
+	for (int i = 1; i < number; i++){
+		fact += fact * i;
+	}
+
+	lua_pushnumber(L, fact);
+
+	return 1;
+}
+
 Interpreter::Interpreter(){
 	L = luaL_newstate();
 	luaL_openlibs(L);
 
 	// Register Lua functions here
 	lua_register(L, "draw_triangle", &draw_triangle);
+	lua_register(L, "factorial", &factorial);
+
 }
 
 bool validate(int result){

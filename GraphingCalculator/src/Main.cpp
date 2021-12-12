@@ -38,10 +38,14 @@ int main(){
 		glTranslated(gx, gy, 0);
 
 //		g.plot("y = math.pow(x,3)", GL_TRIANGLE_FAN);
-		g.plot("y = -math.pow(x,2)-10", GL_TRIANGLE_STRIP);
-
-		g.plot("y = math.pow(x+5,3)+1", GL_TRIANGLE_STRIP);
-		g.plot("y = math.pow(x-1,"+to_string(e)+") c = {1,1,1}", GL_TRIANGLE_STRIP);
+//		g.plot("y = -math.pow(x,2)-10", GL_TRIANGLE_STRIP);
+//		g.plot("y = math.pow(x+5,3)+1", GL_TRIANGLE_STRIP);
+//		g.plot("y = math.pow(x-1,"+to_string(e)+") c = {1,1,1}", GL_TRIANGLE_STRIP);
+//		g.plot("y = math.max(-math.pow(x,2)+2,1)",GL_TRIANGLE_FAN);
+//		g.plot("y = math.sin(x)", GL_TRIANGLE_STRIP);
+//		g.plot("y = -math.sin(math.sin(x)) + math.cos(math.sin(x, y)) + math.cos(x) ", GL_TRIANGLE_STRIP);
+//		g.plot("y = factorial(x)\n y = math.sin(y)", GL_TRIANGLE_STRIP);
+		g.plot("y = math.sin(math.cos(math.tan(x)))", GL_TRIANGLE_STRIP); // -math.sin(math.cos(math.tan(x,y))) +  + math.sin(math.cos(math.tan(y)))
 
 //		for (double y = -10; y < 10; y+=0.1){
 //			for (double x = -10; x < 10; x+=0.1){
@@ -105,6 +109,8 @@ int main(){
 			speed-=0.01;
 		if (speed < 2 && wind.get_key(GLFW_KEY_D))
 			speed+=0.01;
+
+		e+=0.1;
 
 		wind.render();
 

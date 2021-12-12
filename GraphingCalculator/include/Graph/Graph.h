@@ -21,7 +21,7 @@ public:
 	int get_total_x();
 	int get_total_y();
 
-	Point get_point(std::string f, double x);
+	Point get_point(std::string f, double x, double y);
 };
 
 #endif
