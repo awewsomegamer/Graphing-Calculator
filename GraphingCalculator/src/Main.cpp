@@ -13,10 +13,13 @@ double s  = 1;
 double gx = 0;
 double gy = 0;
 double speed = 0.01;
+int theme_index = 0;
 
 int main(){
 	Config conf;
-	conf.read("config.lua");
+	conf.read("C:\\Users\\Ben\\git\\Graphing-Calculator\\GraphingCalculator\\Debug\\config.lua");
+
+	theme_index = conf.default_theme;
 
 	Window wind(500, 500, "Hello OpenGL");
 	Interpreter i(true);
@@ -40,16 +43,17 @@ int main(){
 		glScaled(s,s,0);
 		glTranslated(gx, gy, 0);
 
+		// TODO: OPTOMIZE G.PLOT(F, M);
 		g.plot("f = math.pow(x,3)", GL_TRIANGLE_STRIP);
 		g.plot("f = -math.pow(x,2)", GL_TRIANGLE_STRIP);
-//		g.plot("y = math.pow(x+5,3)+1", GL_TRIANGLE_STRIP);
+		g.plot("y = math.pow(x+5,3)+1", GL_TRIANGLE_STRIP);
 //		g.plot("y = math.pow(x-1,"+to_string(e)+") c = {1,1,1}", GL_TRIANGLE_STRIP);
-//		g.plot("y = math.max(-math.pow(x,2)+2,1)",GL_TRIANGLE_FAN);
-//		g.plot("y = math.sin(x)", GL_TRIANGLE_STRIP);
-//		g.plot("y = -math.sin(math.sin(x)) + math.cos(math.sin(x, y)) + math.cos(x) ", GL_TRIANGLE_STRIP);
-//		g.plot("y = factorial(x)\n y = math.sin(y)", GL_TRIANGLE_STRIP);
-//		g.plot("y = math.sin(math.cos(math.tan(x)))", GL_TRIANGLE_STRIP); // -math.sin(math.cos(math.tan(x,y))) +  + math.sin(math.cos(math.tan(y)))
-//		g.plot("f = math.sqrt(x)", GL_TRIANGLE_STRIP);
+		g.plot("y = math.max(-math.pow(x,2)+2,1)",GL_TRIANGLE_FAN);
+		g.plot("y = math.sin(x)", GL_TRIANGLE_STRIP);
+		g.plot("y = -math.sin(math.sin(x)) + math.cos(math.sin(x, y)) + math.cos(x) ", GL_TRIANGLE_STRIP);
+		g.plot("y = factorial(x)\n y = math.sin(y)", GL_TRIANGLE_STRIP);
+		g.plot("y = math.sin(math.cos(math.tan(x)))", GL_TRIANGLE_STRIP); // -math.sin(math.cos(math.tan(x,y))) +  + math.sin(math.cos(math.tan(y)))
+		g.plot("f = math.sqrt(x)", GL_TRIANGLE_STRIP);
 
 		if (conf.show_grid){
 			for (double y = -10; y < 10; y+=0.1){
@@ -96,25 +100,43 @@ int main(){
 		glTranslated(-gx, -gy, 0);
 		glScaled(-s,-s,0);
 
-		if (s > conf.min_scale && wind.get_key(GLFW_KEY_Q))
+		if (s > conf.min_scale+conf.min_scale && wind.get_key(conf.zoom_out))
 			s-=conf.scale_speed;
-		if (s < conf.max_scale && wind.get_key(GLFW_KEY_E))
+		if (s < conf.max_scale && wind.get_key(conf.zoom_in))
 			s+=conf.scale_speed;
 
-		if (wind.get_key(GLFW_KEY_UP))
+		if (wind.get_key(conf.move_camera_up))
 			gy-=speed;
-		if (wind.get_key(GLFW_KEY_DOWN))
+		if (wind.get_key(conf.move_camera_down))
 			gy+=speed;
 
-		if (wind.get_key(GLFW_KEY_RIGHT))
+		if (wind.get_key(conf.move_camera_right))
 			gx-=speed;
-		if (wind.get_key(GLFW_KEY_LEFT))
+		if (wind.get_key(conf.move_camera_left))
 			gx+=speed;
 
-		if (speed > conf.min_speed && wind.get_key(GLFW_KEY_A))
+		if (speed > conf.min_speed && wind.get_key(conf.decrease_speed))
 			speed-=conf.speed_increment;
-		if (speed < conf.max_speed && wind.get_key(GLFW_KEY_D))
+		if (speed < conf.max_speed && wind.get_key(conf.increase_speed))
 			speed+=conf.speed_increment;
+
+		if (theme_index > 0 && wind.get_key(conf.change_theme_down)){
+			theme_index--;
+			wind.set_key(conf.change_theme_down, false);
+		}
+
+		if (theme_index < (int)conf.themes.size()-1 && wind.get_key(conf.change_theme_up)){
+			theme_index++;
+			wind.set_key(conf.change_theme_up, false);
+		}
+
+		if (conf.use_theme){
+			for (int i = 0; i < 3; i++){
+				conf.background[i] = conf.themes[theme_index][i];
+				conf.axis[i] = conf.themes[theme_index][i+3];
+			}
+		}
+
 
 		wind.render();
 

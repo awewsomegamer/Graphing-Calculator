@@ -13,6 +13,7 @@ public:
 
 	void update(Config c);
 	void render();
+	void set_key(int key, bool value);
 
 	bool should_close();
 	bool get_key(int key);

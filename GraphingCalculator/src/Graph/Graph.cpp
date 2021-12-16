@@ -22,6 +22,13 @@ void Graph::update(int w, int h){
 }
 
 
+//Add comfort features like x^2 = math.pow(x,2) or don't
+//std::string comfortize(std::string string){
+//
+//
+//	return "";
+//}
+
 void Graph::plot(std::string function, int mode){
 	glBegin(mode);
 
@@ -33,8 +40,6 @@ void Graph::plot(std::string function, int mode){
 			glVertex3d(x, (double)(point.y), 0);
 		}
 //	}
-
-//	scale+=0.1;
 
 	glEnd();
 }

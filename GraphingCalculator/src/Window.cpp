@@ -66,6 +66,10 @@ void Window::render(){
 	glfwSwapBuffers(window);
 }
 
+void Window::set_key(int key, bool value){
+	keys[key] = value;
+}
+
 bool Window::should_close(){
 	return glfwWindowShouldClose(window);
 }
