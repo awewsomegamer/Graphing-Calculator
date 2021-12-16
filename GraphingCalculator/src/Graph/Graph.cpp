@@ -6,15 +6,14 @@
 
 using namespace std;
 
-double scale = 1;
-const double fineness = 0.1;
+double fineness = 0.01;
 
-Interpreter i;
+Interpreter i(true);
 int total_x = 10;
 int total_y = 10;
 
-Graph::Graph(){
-	i = Interpreter();
+Graph::Graph(Config conf){
+	fineness = conf.fineness;
 }
 
 void Graph::update(int w, int h){
@@ -26,16 +25,16 @@ void Graph::update(int w, int h){
 void Graph::plot(std::string function, int mode){
 	glBegin(mode);
 
-	for (double y = -total_y+1; y < total_y; y+=fineness){
+//	for (double y = -total_y+1; y < total_y; y+=fineness*10){
 		for (double x = -total_x+1; x < total_x; x+=fineness){
-			Graph::Point point = Graph::get_point(function, x, y);
+			Graph::Point point = Graph::get_point(function, x, 0);
 
-			glColor3f(x,point.y,0.5);
+			glColor3f(x,point.y, 0.5);
 			glVertex3d(x, (double)(point.y), 0);
 		}
-	}
+//	}
 
-	scale+=0.1;
+//	scale+=0.1;
 
 	glEnd();
 }
