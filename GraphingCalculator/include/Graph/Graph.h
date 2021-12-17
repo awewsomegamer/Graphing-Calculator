@@ -2,6 +2,7 @@
 #define GRAPH_H
 
 #include <string>
+#include "../Config.h"
 
 class Graph{
 public:
@@ -13,7 +14,7 @@ public:
 		double b;
 	};
 
-	Graph();
+	Graph(Config conf);
 
 	void update(int w, int h);
 	void plot(std::string function, int mode);

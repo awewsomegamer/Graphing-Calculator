@@ -13,7 +13,7 @@ extern "C"{
 
 class Interpreter{
 public:
-	Interpreter();
+	Interpreter(bool libs);
 
 	void run_file(std::string file);
 	void run_line(std::string line);

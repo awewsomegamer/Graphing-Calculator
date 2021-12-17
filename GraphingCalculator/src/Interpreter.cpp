@@ -32,9 +32,9 @@ int factorial(lua_State* L){
 	return 1;
 }
 
-Interpreter::Interpreter(){
+Interpreter::Interpreter(bool libs){
 	L = luaL_newstate();
-	luaL_openlibs(L);
+	if (libs) luaL_openlibs(L);
 
 	// Register Lua functions here
 	lua_register(L, "draw_triangle", &draw_triangle);

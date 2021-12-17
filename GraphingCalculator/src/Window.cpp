@@ -55,8 +55,8 @@ Window::Window(int w, int h, std::string title){
 
 }
 
-void Window::update(){
-	glClearColor(0, 0, 0, 1);
+void Window::update(Config c){
+	glClearColor(c.background[0], c.background[1], c.background[2], 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glfwPollEvents();
@@ -64,6 +64,10 @@ void Window::update(){
 
 void Window::render(){
 	glfwSwapBuffers(window);
+}
+
+void Window::set_key(int key, bool value){
+	keys[key] = value;
 }
 
 bool Window::should_close(){
