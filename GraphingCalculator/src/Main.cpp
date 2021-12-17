@@ -22,6 +22,7 @@ int main(){
 	Audio a;
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glCullFace(GL_FRONT_AND_BACK);
 
 	while (!wind.should_close()){
 		glMatrixMode(GL_PROJECTION);
@@ -32,12 +33,12 @@ int main(){
 		glPushMatrix();
 
 		wind.update();
-		g.update(wind.get_width()*10, wind.get_height()*10);
+		g.update(wind.get_width(), wind.get_height());
 
 		glScaled(s,s,0);
 		glTranslated(gx, gy, 0);
 
-//		g.plot("y = math.pow(x,3)", GL_TRIANGLE_FAN);
+		g.plot("f = math.pow(x,3)", GL_TRIANGLE_STRIP);
 //		g.plot("y = -math.pow(x,2)-10", GL_TRIANGLE_STRIP);
 //		g.plot("y = math.pow(x+5,3)+1", GL_TRIANGLE_STRIP);
 //		g.plot("y = math.pow(x-1,"+to_string(e)+") c = {1,1,1}", GL_TRIANGLE_STRIP);
@@ -45,7 +46,7 @@ int main(){
 //		g.plot("y = math.sin(x)", GL_TRIANGLE_STRIP);
 //		g.plot("y = -math.sin(math.sin(x)) + math.cos(math.sin(x, y)) + math.cos(x) ", GL_TRIANGLE_STRIP);
 //		g.plot("y = factorial(x)\n y = math.sin(y)", GL_TRIANGLE_STRIP);
-		g.plot("y = math.sin(math.cos(math.tan(x)))", GL_TRIANGLE_STRIP); // -math.sin(math.cos(math.tan(x,y))) +  + math.sin(math.cos(math.tan(y)))
+//		g.plot("y = math.sin(math.cos(math.tan(x)))", GL_TRIANGLE_STRIP); // -math.sin(math.cos(math.tan(x,y))) +  + math.sin(math.cos(math.tan(y)))
 
 //		for (double y = -10; y < 10; y+=0.1){
 //			for (double x = -10; x < 10; x+=0.1){

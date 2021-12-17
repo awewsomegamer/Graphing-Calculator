@@ -26,14 +26,14 @@ void Graph::update(int w, int h){
 void Graph::plot(std::string function, int mode){
 	glBegin(mode);
 
-	for (double y = -total_y+1; y < total_y; y+=fineness){
+//	for (double y = -total_y+1; y < total_y; y+=fineness){
 		for (double x = -total_x+1; x < total_x; x+=fineness){
-			Graph::Point point = Graph::get_point(function, x, y);
+			Graph::Point point = Graph::get_point(function, x, 0);
 
 			glColor3f(x,point.y,0.5);
 			glVertex3d(x, (double)(point.y), 0);
 		}
-	}
+//	}
 
 	scale+=0.1;
 
