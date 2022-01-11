@@ -3,10 +3,12 @@
 #include "../../include/Interpreter.h"
 #include <math.h>
 #include <iostream>
-
 using namespace std;
 
-double fineness = 0.01;
+double fineness = 0;
+double scale = 1;
+double cx = 0;
+double cy = 0;
 
 Interpreter i(true);
 int total_x = 10;
@@ -16,9 +18,12 @@ Graph::Graph(Config conf){
 	fineness = conf.fineness;
 }
 
-void Graph::update(int w, int h){
+void Graph::update(int w, int h, double s, double gx, double gy){
 	total_x = w/100;
 	total_y = h/100;
+	scale = s;
+	cx = gx;
+	cy = gy;
 }
 
 
@@ -29,15 +34,45 @@ void Graph::update(int w, int h){
 //	return "";
 //}
 
+bool Graph::check_render(Point p, int minimizer){
+	// in GL everything starts at 1
+
+	int width = 1;
+	int height = 1;
+
+	glBegin(GL_POINTS);
+	for (double x = cx-width; x < cx+width; x+=0.1){
+		for (double y = cy-height; y < cy+height; y+=0.1){
+			glColor3f(0,1,1);
+			glVertex3d(-x, -y, 0);
+		}
+	}
+	glEnd();
+
+	bool ret = false;
+
+	if (-p.x >= cx-width && -p.x <= cx+width){
+		if (-p.y >= cy-height && -p.y <= cy+height){
+			ret = true;
+		}
+	}
+
+	return ret;
+}
+
 void Graph::plot(std::string function, int mode){
 	glBegin(mode);
 
 //	for (double y = -total_y+1; y < total_y; y+=fineness*10){
-		for (double x = -total_x+1; x < total_x; x+=fineness){
+		std::cout << scale << std::endl;
+		for (double x = -cx-scale*2; x <= -cx+scale*2; x+=fineness){
+//		for (double x = -total_x+1; x < total_x; x+=fineness){
 			Graph::Point point = Graph::get_point(function, x, 0);
 
-			glColor3f(x,point.y, 0.5);
-			glVertex3d(x, (double)(point.y), 0);
+//			if (check_render(point, 1)){
+				glColor3f(x,point.y, 0.5);
+				glVertex3d(x, (double)(point.y), 0);
+//			}
 		}
 //	}
 

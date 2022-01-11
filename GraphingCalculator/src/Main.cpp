@@ -10,6 +10,7 @@
 using namespace std;
 
 double s  = 1;
+double s_inv  = 1;
 double gx = 0;
 double gy = 0;
 double speed = 0.01;
@@ -38,22 +39,22 @@ int main(){
 		glPushMatrix();
 
 		wind.update(conf);
-		g.update(wind.get_width()*10, wind.get_height()*10);
+		g.update(wind.get_width()*10, wind.get_height()*10, s_inv, gx, gy);
 
 		glScaled(s,s,0);
 		glTranslated(gx, gy, 0);
 
 		// TODO: OPTOMIZE G.PLOT(F, M);
 		g.plot("f = math.pow(x,3)", GL_TRIANGLE_STRIP);
-		g.plot("f = -math.pow(x,2)", GL_TRIANGLE_STRIP);
-		g.plot("y = math.pow(x+5,3)+1", GL_TRIANGLE_STRIP);
+//		g.plot("f = -math.pow(x,2)", GL_TRIANGLE_STRIP);
+//		g.plot("y = math.pow(x+5,3)+1", GL_TRIANGLE_STRIP);
 //		g.plot("y = math.pow(x-1,"+to_string(e)+") c = {1,1,1}", GL_TRIANGLE_STRIP);
-		g.plot("y = math.max(-math.pow(x,2)+2,1)",GL_TRIANGLE_FAN);
+//		g.plot("y = math.max(-math.pow(x,2)+2,1)",GL_TRIANGLE_FAN);
 		g.plot("y = math.sin(x)", GL_TRIANGLE_STRIP);
-		g.plot("y = -math.sin(math.sin(x)) + math.cos(math.sin(x, y)) + math.cos(x) ", GL_TRIANGLE_STRIP);
-		g.plot("y = factorial(x)\n y = math.sin(y)", GL_TRIANGLE_STRIP);
-		g.plot("y = math.sin(math.cos(math.tan(x)))", GL_TRIANGLE_STRIP); // -math.sin(math.cos(math.tan(x,y))) +  + math.sin(math.cos(math.tan(y)))
-		g.plot("f = math.sqrt(x)", GL_TRIANGLE_STRIP);
+//		g.plot("y = -math.sin(math.sin(x)) + math.cos(math.sin(x, y)) + math.cos(x) ", GL_TRIANGLE_STRIP);
+//		g.plot("y = factorial(x)\n y = math.sin(y)", GL_TRIANGLE_STRIP);
+//		g.plot("y = math.sin(math.cos(math.tan(x)))", GL_TRIANGLE_STRIP); // -math.sin(math.cos(math.tan(x,y))) +  + math.sin(math.cos(math.tan(y)))
+//		g.plot("f = math.sqrt(x)", GL_TRIANGLE_STRIP);
 
 		if (conf.show_grid){
 			for (double y = -10; y < 10; y+=0.1){
@@ -105,6 +106,11 @@ int main(){
 		if (s < conf.max_scale && wind.get_key(conf.zoom_in))
 			s+=conf.scale_speed;
 
+		if (s_inv > conf.min_scale && wind.get_key(conf.zoom_in))
+			s_inv-=conf.scale_speed*4;
+		if (s_inv < conf.max_scale && wind.get_key(conf.zoom_out))
+			s_inv+=conf.scale_speed*4;
+
 		if (wind.get_key(conf.move_camera_up))
 			gy-=speed;
 		if (wind.get_key(conf.move_camera_down))
@@ -136,7 +142,6 @@ int main(){
 				conf.axis[i] = conf.themes[theme_index][i+3];
 			}
 		}
-
 
 		wind.render();
 
