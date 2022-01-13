@@ -46,12 +46,13 @@ int main(){
 
 		// TODO: OPTOMIZE G.PLOT(F, M);
 		g.plot("f = math.pow(x,3)", GL_TRIANGLE_STRIP);
-		g.plot("f = -math.pow(x,2)", GL_TRIANGLE_STRIP);
+		g.plot("f = -math.pow(y,2)", GL_TRIANGLE_STRIP);
+//		g.plot("f = math.sin(y)", 0);
 //		g.plot("y = math.pow(x+5,3)+1", GL_TRIANGLE_STRIP);
 //		g.plot("y = math.pow(x-1,"+to_string(e)+") c = {1,1,1}", GL_TRIANGLE_STRIP);
 //		g.plot("y = math.max(-math.pow(x,2)+2,1)",GL_TRIANGLE_FAN);
-		g.plot("f = math.cos(x)", GL_TRIANGLE_STRIP);
-//		g.plot("y = -math.sin(math.sin(x)) + math.cos(math.sin(x, y)) + math.cos(x) ", GL_TRIANGLE_STRIP);
+//		g.plot("f = math.cos(x)", GL_TRIANGLE_STRIP);
+//		g.plot("f = -math.sin(math.sin(x)) + math.cos(math.sin(x, y)) + math.cos(x) ", GL_TRIANGLE_STRIP);
 //		g.plot("y = factorial(x)\n y = math.sin(y)", GL_TRIANGLE_STRIP);
 //		g.plot("y = math.sin(math.cos(math.tan(x)))", GL_TRIANGLE_STRIP); // -math.sin(math.cos(math.tan(x,y))) +  + math.sin(math.cos(math.tan(y)))
 //		g.plot("f = math.sqrt(x)", GL_TRIANGLE_STRIP);

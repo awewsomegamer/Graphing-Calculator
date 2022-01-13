@@ -78,20 +78,29 @@ void Graph::plot(std::string function, int mode){
 }
 
 void Graph::render(){
-	glBegin(GL_TRIANGLE_STRIP);
+	for (auto const& v : functions){
+		glBegin(GL_TRIANGLE_STRIP);
 
-//	for (double y = -cy-scale*2; y <= -cy+scale*2; y+=fineness){
-		for (double x = -cx-total_x; x <= -cx+total_x; x+=fineness){
-			for (auto const& v : functions){
-				Point point = get_point(v.first, x, 0);
+
+		for (double x = -cx-total_x-scale; x <= -cx+total_x+scale; x+=fineness){
+//			for (double y = -1; y <= 1; y+=fineness){
+				Point point = get_point(v.first, x, x);
 
 				glColor3f(x,point.y, 0.5);
-				glVertex3d(x, (double)(point.y), 0);
-			}
-		}
-//	}
 
-	glEnd();
+				if (v.first.find("x") != -1 && v.first.find("y") == -1)
+					glVertex3d(x, (double)(point.y), 0);
+
+				if (v.first.find("y") != -1 && v.first.find("x") == -1)
+					glVertex3d((double)(point.y), x, 0);
+
+				if (v.first.find("x") != -1 && v.first.find("y") != -1);
+					// implement a method for drawing both
+//			}
+		}
+
+		glEnd();
+	}
 }
 //	std::cout << scale << std::endl;
 //		for (double x = -total_x+1; x < total_x; x+=fineness){
