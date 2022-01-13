@@ -3,7 +3,10 @@
 #include "../../include/Interpreter.h"
 #include <math.h>
 #include <iostream>
+#include <map>
 using namespace std;
+
+map<string, int> functions;
 
 double fineness = 0;
 double scale = 1;
@@ -61,24 +64,40 @@ bool Graph::check_render(Point p, int minimizer){
 }
 
 void Graph::plot(std::string function, int mode){
-	glBegin(mode);
+	functions.emplace(function, mode);
 
-//	for (double y = -total_y+1; y < total_y; y+=fineness*10){
-		std::cout << scale << std::endl;
-		for (double x = -cx-scale*2; x <= -cx+scale*2; x+=fineness){
-//		for (double x = -total_x+1; x < total_x; x+=fineness){
-			Graph::Point point = Graph::get_point(function, x, 0);
+//		glBegin(mode);
+//	for (double x = -cx-scale*2; x <= -cx+scale*2; x+=fineness){
+//		Point point = get_point(function, x, 0);
+//
+//		glColor3f(x,point.y, 0.5);
+//		glVertex3d(x, (double)(point.y), 0);
+//
+//	}
+//		glEnd();
+}
 
-//			if (check_render(point, 1)){
+void Graph::render(){
+	glBegin(GL_TRIANGLE_STRIP);
+
+//	for (double y = -cy-scale*2; y <= -cy+scale*2; y+=fineness){
+		for (double x = -cx-total_x; x <= -cx+total_x; x+=fineness){
+			for (auto const& v : functions){
+				Point point = get_point(v.first, x, 0);
+
 				glColor3f(x,point.y, 0.5);
 				glVertex3d(x, (double)(point.y), 0);
-//			}
+			}
 		}
 //	}
 
 	glEnd();
 }
-
+//	std::cout << scale << std::endl;
+//		for (double x = -total_x+1; x < total_x; x+=fineness){
+//			if (check_render(point, 1)){
+//			}
+//	}
 
 //
 //void Graph::plot_rough_lines(std::string function){

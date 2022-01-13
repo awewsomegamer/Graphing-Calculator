@@ -18,6 +18,7 @@ public:
 
 	void update(int w, int h, double fineness, double gx, double gy);
 	void plot(std::string function, int mode);
+	void render();
 
 	int get_total_x();
 	int get_total_y();
