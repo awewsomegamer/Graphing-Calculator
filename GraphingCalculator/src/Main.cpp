@@ -9,12 +9,12 @@
 
 using namespace std;
 
-double s  = 1;
-double s_inv  = 1;
-double gx = 0;
-double gy = 0;
-double speed = 0.01;
-int theme_index = 0;
+double s  = 1; // Scale
+double s_inv  = 1; // Inverted scale
+double gx = 0; // Camera X (could be thought of as graph x)
+double gy = 0; // Camera Y (could be thought of as graph y)
+double speed = 0.01; // Camera speed
+int theme_index = 0; // Current theme index
 
 int main(){
 	Config conf;
@@ -27,19 +27,17 @@ int main(){
 	Graph g(conf);
 	Audio a;
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glCullFace(GL_FRONT_AND_BACK);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Switch to line mode to make it so that GL_TRIANGLE_STRIP (connected line) and GL_TRIANGLE_FAN (filled) create nicer graphs
+	glCullFace(GL_FRONT_AND_BACK); // Cull some faces
 
 	while (!wind.should_close()){
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		glOrtho(-100,-100,-100,-100, 1, 1000000);
-		glMatrixMode(GL_MODELVIEW);
 
 		glPushMatrix();
 
 		wind.update(conf);
-		g.update(wind.get_width()*10, wind.get_height()*10, s_inv, gx, gy);
+		g.update(wind.get_width()*10, wind.get_height()*10, s_inv, gx, gy); // Update the grapher with some variables
 
 		glScaled(s,s,0);
 		glTranslated(gx, gy, 0);

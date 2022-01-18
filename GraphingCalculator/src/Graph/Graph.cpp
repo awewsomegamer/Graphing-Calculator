@@ -22,9 +22,9 @@ Graph::Graph(Config conf){
 }
 
 void Graph::update(int w, int h, double s, double gx, double gy){
-	total_x = w/100;
-	total_y = h/100;
-	scale = s;
+	total_x = w/100; // Figure out window width in OpenGL numbers (500 = 5)
+	total_y = h/100; // Figure out window height in OpenGL numbers (500 = 5)
+	scale = s; // Set global variables from maind
 	cx = gx;
 	cy = gy;
 }
