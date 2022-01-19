@@ -22,6 +22,7 @@ public:
 	float min_scale = 0.01;
 	float scale_speed = 0.01;
 	float fineness = 0.1;
+	float start_zoom = 0.1;
 
 	int default_theme = 0;
 	int move_camera_left = GLFW_KEY_LEFT;

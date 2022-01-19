@@ -1,5 +1,4 @@
 #include <iostream>
-#include <windows.h>
 #include "../include/Window.h"
 #include "../include/Audio.h"
 #include "../include/Interpreter.h"
@@ -9,7 +8,7 @@
 
 using namespace std;
 
-double s  = 1; // Scale
+double s  = 0.1; // Scale
 double s_inv  = 1; // Inverted scale
 double gx = 0; // Camera X (could be thought of as graph x)
 double gy = 0; // Camera Y (could be thought of as graph y)
@@ -18,9 +17,11 @@ int theme_index = 0; // Current theme index
 
 int main(){
 	Config conf;
-	conf.read("C:\\Users\\Ben\\git\\Graphing-Calculator\\GraphingCalculator\\Debug\\config.lua");
+	conf.read("config.lua");
 
 	theme_index = conf.default_theme;
+	s = conf.start_zoom;
+	s_inv = conf.start_zoom*10;
 
 	Window wind(500, 500, "Hello OpenGL");
 	Interpreter i(true);
@@ -43,16 +44,18 @@ int main(){
 		glTranslated(gx, gy, 0);
 
 		// TODO: OPTOMIZE G.PLOT(F, M);
-		g.plot("f = math.pow(x,3)", GL_TRIANGLE_STRIP);
-		g.plot("f = -math.pow(y,2)", GL_TRIANGLE_STRIP);
-//		g.plot("f = math.sin(y)", 0);
+		g.plot("f = math.pow(x,3) > 0", GL_TRIANGLE_STRIP);
+		g.plot("f = math.pow(y,2) = 3", GL_TRIANGLE_STRIP);
+		g.plot("f = math.sin(y) < 0.5", 0);
+//		g.plot("f = math.abs(math.sin(x)*3) != 0", 0);
+//		g.plot("if (x < 2) then f = x else f = 1 end", 0);
 //		g.plot("y = math.pow(x+5,3)+1", GL_TRIANGLE_STRIP);
 //		g.plot("y = math.pow(x-1,"+to_string(e)+") c = {1,1,1}", GL_TRIANGLE_STRIP);
 //		g.plot("y = math.max(-math.pow(x,2)+2,1)",GL_TRIANGLE_FAN);
 //		g.plot("f = math.cos(x)", GL_TRIANGLE_STRIP);
 //		g.plot("f = -math.sin(math.sin(x)) + math.cos(math.sin(x, y)) + math.cos(x) ", GL_TRIANGLE_STRIP);
-//		g.plot("y = factorial(x)\n y = math.sin(y)", GL_TRIANGLE_STRIP);
-//		g.plot("y = math.sin(math.cos(math.tan(x)))", GL_TRIANGLE_STRIP); // -math.sin(math.cos(math.tan(x,y))) +  + math.sin(math.cos(math.tan(y)))
+//		g.plot("y = factorial(x)", GL_TRIANGLE_STRIP);//\n y = math.sin(y)
+//		g.plot("y = math.sin(math.cos(math.tan(x)))", GL_TRIANGLE_STRIP); ///-math.sin(math.cos(math.tan(x,y))) +  + math.sin(math.cos(math.tan(y)))
 //		g.plot("f = math.sqrt(x)", GL_TRIANGLE_STRIP);
 
 		g.render();

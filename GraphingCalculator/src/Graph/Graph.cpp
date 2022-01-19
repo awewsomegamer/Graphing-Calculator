@@ -4,12 +4,14 @@
 #include <math.h>
 #include <iostream>
 #include <map>
+#include <algorithm>
+
 using namespace std;
 
 map<string, int> functions;
 
 double fineness = 0;
-double scale = 1;
+double scale = 0.1;
 double cx = 0;
 double cy = 0;
 
@@ -65,38 +67,100 @@ bool Graph::check_render(Point p, int minimizer){
 
 void Graph::plot(std::string function, int mode){
 	functions.emplace(function, mode);
-
-//		glBegin(mode);
-//	for (double x = -cx-scale*2; x <= -cx+scale*2; x+=fineness){
-//		Point point = get_point(function, x, 0);
-//
-//		glColor3f(x,point.y, 0.5);
-//		glVertex3d(x, (double)(point.y), 0);
-//
-//	}
-//		glEnd();
 }
 
 void Graph::render(){
 	for (auto const& v : functions){
 		glBegin(GL_TRIANGLE_STRIP);
 
-
 		for (double x = -cx-total_x-scale; x <= -cx+total_x+scale; x+=fineness){
-//			for (double y = -1; y <= 1; y+=fineness){
-				Point point = get_point(v.first, x, x);
+				// Check for equal sign / inequality sign
+				int sign = 0;
+				int sign_loc = 10;
 
-				glColor3f(x,point.y, 0.5);
+				std::string signs[] = {">","<",">=","<=","!=","="};
+				std::string removef = v.first;
 
-				if (v.first.find("x") != -1 && v.first.find("y") == -1)
+				int offset = removef.find("=")+1;
+				removef = removef.substr(offset);
+
+				for (sign = 0; sign < 6; sign++){
+					if (removef.find(signs[sign]) != -1){
+						sign_loc = removef.find(signs[sign])+offset;
+						break;
+					}
+				}
+
+				std::string equation = sign == 6 ? v.first : v.first.substr(0, sign_loc);
+				std::string inequality = "f = "+(sign == 6 ? "0" : v.first.substr(sign_loc+(sign != 6 ? signs[sign].size() : 0)));
+
+				Point point = get_point(equation, x, x);
+				Point ineq = sign != 6 ? get_point(inequality, x, x) : get_point("", 0, 0);
+				bool draw = true;
+
+				if (point.y == ineq.y){
+					std::cout << point.y << std::endl;
+				}
+
+				switch (sign){
+				case 0: // >
+					if (point.y < ineq.y)
+						draw = false;
+
+					break;
+
+				case 1: // <
+					if (point.y > ineq.y)
+						draw = false;
+
+					break;
+
+				case 2: // >=
+					if (point.y <= ineq.y)
+						draw = false;
+
+					break;
+
+				case 3: // <=
+					if (point.y >= ineq.y)
+						draw = false;
+
+					break;
+
+				case 4: // !=
+					if (point.y == ineq.y)
+						draw = false;
+
+					break;
+
+				case 5: // =
+					if (point.y != ineq.y)
+						draw = false;
+
+					break;
+				}
+
+				if (draw){
+					glColor3f(x,point.y, 0.5);
+
+					if (v.first.find("x") != -1 && v.first.find("y") == -1)
+						glVertex3d(x, (double)(point.y), 0);
+
+					if (v.first.find("y") != -1 && v.first.find("x") == -1)
+						glVertex3d((double)(point.y), x, 0);
+				}
+		}
+
+		// This code is slow and needs to be optimized
+		if (v.first.find("x") != -1 && v.first.find("y") != -1){
+			for (double x = -cx-total_x-scale; x <= -cx+total_x+scale; x+=fineness){
+				for (double y = -cy-total_x; y <= -cy+total_y; y+=fineness*2){
+					Point point = get_point(v.first, x, y);
+					glColor3f(x,point.y, 0.5);
+
 					glVertex3d(x, (double)(point.y), 0);
-
-				if (v.first.find("y") != -1 && v.first.find("x") == -1)
-					glVertex3d((double)(point.y), x, 0);
-
-				if (v.first.find("x") != -1 && v.first.find("y") != -1);
-					// implement a method for drawing both
-//			}
+				}
+			}
 		}
 
 		glEnd();

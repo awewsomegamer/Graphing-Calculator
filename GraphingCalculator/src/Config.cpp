@@ -42,6 +42,10 @@ void read_type(std::string table, T& v){
 }
 
 void Config::read(std::string file){
+	// TODO:: There was an error where the themes array is *required*
+	// otherwise the program will not start.
+	// This issue needs to be fixed.
+
 	ci.run_file(file);
 
 	lua_getglobal(ci.get_state(), "themes");
@@ -76,6 +80,7 @@ void Config::read(std::string file){
 	read_type("min_scale", min_scale);
 	read_type("scale_speed", scale_speed);
 	read_type("fineness", fineness);
+	read_type("start_zoom", start_zoom);
 
 	read_type("default_theme", default_theme);
 	read_type("move_camera_left", move_camera_left);
