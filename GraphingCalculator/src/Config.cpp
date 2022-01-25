@@ -7,6 +7,7 @@ Config::Config(){
 
 }
 
+// Read an array named name and cast to type t and insert into array v
 template <typename T>
 void read_type_arr(std::string table, T& v){
 	lua_getglobal(ci.get_state(), table.c_str());
@@ -20,6 +21,11 @@ void read_type_arr(std::string table, T& v){
 			if (lua_isnumber(ci.get_state(), -1)){
 				v[itt++] = (float)(lua_tonumber(ci.get_state(), -1));
 			}
+//			else if(lua_isboolean(ci.get_state(), -1)){
+//				v[itt++] = (bool)(lua_toboolean(ci.get_state(), -1));
+//			}else if(lua_isstring(ci.get_state(), -1)){
+//				v[itt++] = (std::string)(lua_toboolean(ci.get_state(), -1));
+//			}
 
 			lua_pop(ci.get_state(), 1);
 		}
@@ -28,19 +34,24 @@ void read_type_arr(std::string table, T& v){
 	}
 }
 
+// Read variable named variable cast to type t place in v
 template <typename T>
-void read_type(std::string table, T& v){
-	lua_getglobal(ci.get_state(), table.c_str());
+void read_type(std::string variable, T& v){
+	lua_getglobal(ci.get_state(), variable.c_str());
 
 	if (lua_isnumber(ci.get_state(), -1)){
 		v = lua_tonumber(ci.get_state(), -1);
-	}else if (lua_isboolean(ci.get_state(), -1)){
-		v =  lua_toboolean(ci.get_state(), -1);
 	}
+//	else if (lua_isboolean(ci.get_state(), -1)){
+//		v =  lua_toboolean(ci.get_state(), -1);
+//	}else if (lua_isstring(ci.get_state(), -1)){
+//		v =  lua_tostring(ci.get_state(), -1);
+//	}
 
 	lua_pop(ci.get_state(), -1);
 }
 
+// Read a file name <file> and set variables in config.h appropriately
 void Config::read(std::string file){
 	// TODO:: There was an error where the themes array is *required*
 	// otherwise the program will not start.

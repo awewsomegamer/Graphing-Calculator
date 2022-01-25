@@ -35,6 +35,7 @@ public:
 	int decrease_speed = GLFW_KEY_A;
 	int change_theme_up = GLFW_KEY_O;
 	int change_theme_down = GLFW_KEY_I;
+	int reload_graphs = GLFW_KEY_R;
 
 	bool show_grid = false;
 	bool use_theme = true;

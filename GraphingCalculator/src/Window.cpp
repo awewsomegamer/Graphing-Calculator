@@ -1,13 +1,17 @@
 #include "../include/Window.h"
 #include "../include/Log.h"
 
+// Window object
 GLFWwindow* window;
 
+// Array of keys
 bool keys[GLFW_KEY_LAST];
 
+// Original width and heigh
 int cw = 500;
 int ch = 500;
 
+// Call backs
 void window_size_callback(GLFWwindow* window, int w, int h){
 	cw = w;
 	ch = h;
@@ -19,11 +23,13 @@ void keyboard_callback(GLFWwindow* window, int key, int scan, int action, int mo
 	keys[key] = (action != GLFW_RELEASE);
 }
 
+// Set callbacks into window so that they function
 void make_callbacks(){
 	glfwSetWindowSizeCallback(window, window_size_callback);
 	glfwSetKeyCallback(window, keyboard_callback);
 }
 
+// Initialize GLFW, create a window with size of cw and ch and center it
 Window::Window(int w, int h, std::string title){
 	cw = w;
 	ch = h;
@@ -55,6 +61,7 @@ Window::Window(int w, int h, std::string title){
 
 }
 
+// Update the window with the config object being passed
 void Window::update(Config c){
 	glClearColor(c.background[0], c.background[1], c.background[2], 1);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -62,26 +69,32 @@ void Window::update(Config c){
 	glfwPollEvents();
 }
 
+// Render the window
 void Window::render(){
 	glfwSwapBuffers(window);
 }
 
+// Set a key in the keys array
 void Window::set_key(int key, bool value){
 	keys[key] = value;
 }
 
+// Returns if the window should close
 bool Window::should_close(){
 	return glfwWindowShouldClose(window);
 }
 
+// Check the value of a key
 bool Window::get_key(int key){
 	return keys[key];
 }
 
+// Get the width of the window
 int Window::get_width(){
 	return cw;
 }
 
+// Get the height of the window
 int Window::get_height(){
 	return ch;
 }

@@ -7,17 +7,15 @@
 #include <map>
 #include <algorithm>
 #include <pthread.h>
-#include <unistd.h>
 #include <string>
-#include <sstream>
 
 using namespace std;
 
-// Function mode
-map<string, int> functions;
+// Functions vecto
+std::vector<std::string> functions;
 
-//Define mutex
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+//Define mutex to be able to synchronize threads
+//pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 // Variables to be updated
 double fineness = 0;
@@ -54,6 +52,7 @@ void Graph::update(int w, int h, double s, double gx, double gy){
 //}
 
 // This function is not used
+// Checks if the point is within the range of the camera
 bool Graph::check_render(Point p, int minimizer){
 	// in GL everything starts at 1
 
@@ -80,9 +79,9 @@ bool Graph::check_render(Point p, int minimizer){
 	return ret;
 }
 
-// Add function and it's mode to the map
-void Graph::plot(std::string function, int mode){
-	functions.emplace(function, mode);
+// Add function to functions vector
+void Graph::plot(std::string function){
+	functions.push_back(function);
 }
 
 // Calculate graphs
@@ -101,160 +100,38 @@ void Graph::plot(std::string function, int mode){
 //	pthread_exit(0);
 //}
 
-// Render the graphs
+// Render the functions in functions vector
 void Graph::render(){
-	pthread_t threads[functions.size()];
-
-	int i = 0;
+//	pthread_t threads[functions.size()];
+//
+//	int i = 0;
 	for (auto& v : functions){
 		glBegin(GL_TRIANGLE_STRIP);
 		std::vector<double> points;
 
 		for (double x = -cx-total_x-scale; x <= -cx+total_x+scale; x+=fineness){
-			// Check for equal sign / inequality sign
-			int sign = 0;
-			int sign_loc = 10;
+			Point point = get_point(v, x, x);
 
-			std::string signs[] = {">","<",">=","<=","!=","="};
-			std::string removef = v.first;
-
-			int offset = removef.find("=")+1;
-			removef = removef.substr(offset);
-
-			for (sign = 0; sign < 6; sign++){
-				if (removef.find(signs[sign]) != -1){
-					sign_loc = removef.find(signs[sign])+offset;
-					break;
-				}
-			}
-
-			// Seperate equation from inequality, if sign is 6 there is no sign
-			std::string equation = sign == 6 ? v.first : v.first.substr(0, sign_loc);
-			std::string inequality = "f = "+(sign == 6 ? "0" : v.first.substr(sign_loc+(sign != 6 ? signs[sign].size() : 0)));
-
-			Point point = get_point(equation, x, x);
-			Point ineq = sign != 6 ? get_point(inequality, x, x) : get_point("", 0, 0);
-			bool draw = true;
-
-			switch (sign){
-			case 0: // >
-				if (point.y < ineq.y)
-					draw = false;
-
-				break;
-
-			case 1: // <
-				if (point.y > ineq.y)
-					draw = false;
-
-				break;
-
-			case 2: // >=
-				if (point.y <= ineq.y)
-					draw = false;
-
-				break;
-
-			case 3: // <=
-				if (point.y >= ineq.y)
-					draw = false;
-
-				break;
-
-			case 4: // !=
-				if (point.y == ineq.y)
-					draw = false;
-
-				break;
-
-			case 5: // =
-				if (point.y != ineq.y)
-					draw = false;
-
-				break;
-			}
-
-			if (draw){
+			if ((point.has_inequality && point.inequality_result) || !(point.has_inequality)){
 				points.push_back(point.y);
 
 				glColor3f(x,point.y, 0.5);
 
-				if (v.first.find("x") != -1 && v.first.find("y") == -1)
+				if (v.find("x") != -1 && v.find("y") == -1)
 					glVertex3d(x, (double)(point.y), 0);
 
-				if (v.first.find("y") != -1 && v.first.find("x") == -1)
+				if (v.find("y") != -1 && v.find("x") == -1)
 					glVertex3d((double)(point.y), x, 0);
 			}
 	}
 
 	// This code is slow and needs to be optimized
-	if (v.first.find("x") != -1 && v.first.find("y") != -1){
+	if (v.find("x") != -1 && v.find("y") != -1){
 		for (double x = -cx-total_x-scale; x <= -cx+total_x+scale; x+=fineness){
 			for (double y = -cy-total_x; y <= -cy+total_y; y+=fineness*2){
-				// Check for equal sign / inequality sign
-				int sign = 0;
-				int sign_loc = 10;
+				Point point = get_point(v, x, y);
 
-				std::string signs[] = {">","<",">=","<=","!=","="};
-				std::string removef = v.first;
-
-				int offset = removef.find("=")+1;
-				removef = removef.substr(offset);
-
-				for (sign = 0; sign < 6; sign++){
-					if (removef.find(signs[sign]) != -1){
-						sign_loc = removef.find(signs[sign])+offset;
-						break;
-					}
-				}
-
-				// Seperate equation from inequality, if sign is 6 there is no sign
-				std::string equation = sign == 6 ? v.first : v.first.substr(0, sign_loc);
-				std::string inequality = "f = "+(sign == 6 ? "0" : v.first.substr(sign_loc+(sign != 6 ? signs[sign].size() : 0)));
-
-				Point point = get_point(equation, x, y);
-				Point ineq = sign != 6 ? get_point(inequality, x, y) : get_point("", 0, 0);
-				bool draw = true;
-
-				switch (sign){
-				case 0: // >
-					if (point.y < ineq.y)
-						draw = false;
-
-					break;
-
-				case 1: // <
-					if (point.y > ineq.y)
-						draw = false;
-
-					break;
-
-				case 2: // >=
-					if (point.y <= ineq.y)
-						draw = false;
-
-					break;
-
-				case 3: // <=
-					if (point.y >= ineq.y)
-						draw = false;
-
-					break;
-
-				case 4: // !=
-					if (point.y == ineq.y)
-						draw = false;
-
-					break;
-
-				case 5: // =
-					if (point.y != ineq.y)
-						draw = false;
-
-					break;
-				}
-
-				if (draw){
+				if ((point.has_inequality && point.inequality_result) || !(point.has_inequality)){
 					points.push_back(point.y);
 
 					glColor3f(x,point.y, 0.5);
@@ -282,23 +159,6 @@ void Graph::render(){
 //		pthread_join(threads[i], 0);
 //	}
 }
-//	std::cout << scale << std::endl;
-//		for (double x = -total_x+1; x < total_x; x+=fineness){
-//			if (check_render(point, 1)){
-//			}
-//	}
-
-//
-//void Graph::plot_rough_lines(std::string function){
-//	glBegin(GL_LINES);
-//	for (double x = -total_x+1; x < total_x; x+=fineness){
-//		glColor3f(0.5,0.5,0.5);
-//		Graph::Point point = Graph::get_point(function, (float)x);
-//
-//		glVertex3d(x/scale, (double)(point.y/scale), 0);
-//	}
-//	glEnd();
-//}
 
 
 // Get the total calculated total x
@@ -312,13 +172,34 @@ int Graph::get_total_y(){
 }
 
 // Use Lua to calculate the value of a function
-Graph::Point get_point(std::string f, double x, double y){
+Point Graph::get_point(std::string f, double x, double y){
 	lua_pushnumber(i.get_state(), x);
 	lua_setglobal(i.get_state(), "x");
 	lua_pushnumber(i.get_state(), y);
 	lua_setglobal(i.get_state(), "y");
 
-	i.run_line(f);
+	// Check for equal sign / inequality sign
+	int sign = 0;
+	int sign_loc = 10;
+
+	std::string signs[] = {">","<",">=","<=","!=","="};
+
+	int offset = f.find("=")+1;
+	int color_property_offset = f.find("C:");
+
+	for (sign = 0; sign < 6; sign++){
+		if (f.substr(offset).find(signs[sign]) != -1){
+			sign_loc = f.substr(offset).find(signs[sign])+offset;
+			break;
+		}
+	}
+
+	// Seperate equation from inequality, if sign is 6 there is no sign, and color
+	std::string equation = sign == 6 ? f : f.substr(0, sign_loc);
+	std::string inequality = "f = "+(sign == 6 ? "0" : f.substr(sign_loc+(sign != 6 ? signs[sign].size() : 0), (color_property_offset == -1 ? f.size() : color_property_offset)));
+	std::string color = color_property_offset == -1 ? "" : "c = "+f.substr(color_property_offset);
+
+	i.run_line(equation);
 
 	lua_getglobal(i.get_state(), "f");
 
@@ -329,23 +210,101 @@ Graph::Point get_point(std::string f, double x, double y){
 	}
 
 	lua_pop(i.get_state(), -1);
-	lua_pop(i.get_state(), -1);
 
-// f = math.pow(x,3) > 0
-// c = [r,g,b]
-// This code is to set the color of the graph
-//	double colors[3];
-//
-//	lua_getglobal(i.get_state(), "c");
-//	if (lua_istable(i.get_state(),-1)){
-//		std::cout << lua_tonumber(i.get_state(), 1) <<
-//				lua_tonumber(i.get_state(),1) <<
-//				lua_tonumber(i.get_state(), 1) << std::endl;
-//	}
+	i.run_line(inequality);
 
-	Graph::Point p = {x,result};
+	lua_getglobal(i.get_state(), "f");
+
+	double inequality_d = 0;
+
+	if (lua_isnumber(i.get_state(), -1)){
+		inequality_d = (double)lua_tonumber(i.get_state(), -1);
+	}
+
+	lua_pop(i.get_state(), -1); // Pop result
+
+	bool draw = true;
+
+	switch (sign){
+	case 0: // >
+		if (result < inequality_d)
+			draw = false;
+
+		break;
+
+	case 1: // <
+		if (result > inequality_d)
+			draw = false;
+
+		break;
+
+	case 2: // >=
+		if (result <= inequality_d)
+			draw = false;
+
+		break;
+
+	case 3: // <=
+		if (result >= inequality_d)
+			draw = false;
+
+		break;
+
+	case 4: // !=
+		if (result == inequality_d)
+			draw = false;
+
+		break;
+
+	case 5: // =
+		if (result != inequality_d)
+			draw = false;
+
+		break;
+	}
+
+	lua_pop(i.get_state(), -1); // Pop inequality_d
+
+	lua_pop(i.get_state(), -1); // Pop Y
+	lua_pop(i.get_state(), -1); // Pop X
+
+	Point p = {x,result};
+
+	p.has_inequality = !(sign_loc == 6);
+	p.inequality_result = draw;
+
+	if (color_property_offset != -1){
+		i.run_line(color);
+
+		lua_getglobal(i.get_state(), "c");
+
+		double colors[3];
+
+		lua_pushnil(i.get_state());
+
+		int itt = 0;
+
+		while (lua_next(i.get_state(), -2)){
+			if (lua_isnumber(i.get_state(), -1)){
+				colors[itt++] = (float)(lua_tonumber(i.get_state(), -1));
+			}
+
+			lua_pop(i.get_state(), 1);
+		}
+
+		lua_pop(i.get_state(), 1); // Pop colors array
+
+		p.r = colors[0];
+		p.g = colors[1];
+		p.b = colors[2];
+		p.custom_color = true;
+	}
 
 	return p;
 }
 
+// Setter for functions vector
+void Graph::set_graphs(std::vector<std::string> graphs){
+	functions = graphs;
+}
 

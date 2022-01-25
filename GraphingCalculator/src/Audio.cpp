@@ -45,7 +45,7 @@ double Audio::find_pitch(std::vector<double> values){
 	return avg_difference;
 }
 
-// Add audio to map
+// Play noise on set pitch
 void Audio::play(double pitch){
 	AudioFile<double> file("res/Noise.wav");
 

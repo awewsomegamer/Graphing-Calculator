@@ -5,6 +5,7 @@
 #include <audio/AL/alc.h>
 #include <audio/AudioFile.h>
 #include <string>
+#include <vector>
 
 class Audio{
 public:
