@@ -1,28 +1,42 @@
 #include "../../include/Graph/Graph.h"
 #include "../../include/Log.h"
 #include "../../include/Interpreter.h"
+#include "../../include/Audio.h"
 #include <math.h>
 #include <iostream>
 #include <map>
 #include <algorithm>
+#include <pthread.h>
+#include <unistd.h>
+#include <string>
+#include <sstream>
 
 using namespace std;
 
+// Function mode
 map<string, int> functions;
 
+//Define mutex
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+// Variables to be updated
 double fineness = 0;
 double scale = 0.1;
 double cx = 0;
 double cy = 0;
 
 Interpreter i(true);
+Audio audio;
+
 int total_x = 10;
 int total_y = 10;
 
+// Initialize
 Graph::Graph(Config conf){
 	fineness = conf.fineness;
 }
 
+// Update variables from the main function
 void Graph::update(int w, int h, double s, double gx, double gy){
 	total_x = w/100; // Figure out window width in OpenGL numbers (500 = 5)
 	total_y = h/100; // Figure out window height in OpenGL numbers (500 = 5)
@@ -39,6 +53,7 @@ void Graph::update(int w, int h, double s, double gx, double gy){
 //	return "";
 //}
 
+// This function is not used
 bool Graph::check_render(Point p, int minimizer){
 	// in GL everything starts at 1
 
@@ -65,15 +80,117 @@ bool Graph::check_render(Point p, int minimizer){
 	return ret;
 }
 
+// Add function and it's mode to the map
 void Graph::plot(std::string function, int mode){
 	functions.emplace(function, mode);
 }
 
+// Calculate graphs
+//void* calculate_graph(void* arg){
+//	pthread_mutex_lock(&mutex);
+//
+//
+//	std::string v = *((std::string*)arg);
+//
+//	std::cout << "From <draw_graph> :: " << v << std::endl;
+//
+//	// Calculate all points and return them to main thread to draw
+//
+//	pthread_mutex_unlock(&mutex);
+//
+//	pthread_exit(0);
+//}
+
+// Render the graphs
 void Graph::render(){
-	for (auto const& v : functions){
+	pthread_t threads[functions.size()];
+
+	int i = 0;
+	for (auto& v : functions){
 		glBegin(GL_TRIANGLE_STRIP);
+		std::vector<double> points;
 
 		for (double x = -cx-total_x-scale; x <= -cx+total_x+scale; x+=fineness){
+			// Check for equal sign / inequality sign
+			int sign = 0;
+			int sign_loc = 10;
+
+			std::string signs[] = {">","<",">=","<=","!=","="};
+			std::string removef = v.first;
+
+			int offset = removef.find("=")+1;
+			removef = removef.substr(offset);
+
+			for (sign = 0; sign < 6; sign++){
+				if (removef.find(signs[sign]) != -1){
+					sign_loc = removef.find(signs[sign])+offset;
+					break;
+				}
+			}
+
+			// Seperate equation from inequality, if sign is 6 there is no sign
+			std::string equation = sign == 6 ? v.first : v.first.substr(0, sign_loc);
+			std::string inequality = "f = "+(sign == 6 ? "0" : v.first.substr(sign_loc+(sign != 6 ? signs[sign].size() : 0)));
+
+			Point point = get_point(equation, x, x);
+			Point ineq = sign != 6 ? get_point(inequality, x, x) : get_point("", 0, 0);
+			bool draw = true;
+
+			switch (sign){
+			case 0: // >
+				if (point.y < ineq.y)
+					draw = false;
+
+				break;
+
+			case 1: // <
+				if (point.y > ineq.y)
+					draw = false;
+
+				break;
+
+			case 2: // >=
+				if (point.y <= ineq.y)
+					draw = false;
+
+				break;
+
+			case 3: // <=
+				if (point.y >= ineq.y)
+					draw = false;
+
+				break;
+
+			case 4: // !=
+				if (point.y == ineq.y)
+					draw = false;
+
+				break;
+
+			case 5: // =
+				if (point.y != ineq.y)
+					draw = false;
+
+				break;
+			}
+
+			if (draw){
+				points.push_back(point.y);
+
+				glColor3f(x,point.y, 0.5);
+
+				if (v.first.find("x") != -1 && v.first.find("y") == -1)
+					glVertex3d(x, (double)(point.y), 0);
+
+				if (v.first.find("y") != -1 && v.first.find("x") == -1)
+					glVertex3d((double)(point.y), x, 0);
+			}
+	}
+
+	// This code is slow and needs to be optimized
+	if (v.first.find("x") != -1 && v.first.find("y") != -1){
+		for (double x = -cx-total_x-scale; x <= -cx+total_x+scale; x+=fineness){
+			for (double y = -cy-total_x; y <= -cy+total_y; y+=fineness*2){
 				// Check for equal sign / inequality sign
 				int sign = 0;
 				int sign_loc = 10;
@@ -91,16 +208,13 @@ void Graph::render(){
 					}
 				}
 
+				// Seperate equation from inequality, if sign is 6 there is no sign
 				std::string equation = sign == 6 ? v.first : v.first.substr(0, sign_loc);
 				std::string inequality = "f = "+(sign == 6 ? "0" : v.first.substr(sign_loc+(sign != 6 ? signs[sign].size() : 0)));
 
-				Point point = get_point(equation, x, x);
-				Point ineq = sign != 6 ? get_point(inequality, x, x) : get_point("", 0, 0);
+				Point point = get_point(equation, x, y);
+				Point ineq = sign != 6 ? get_point(inequality, x, y) : get_point("", 0, 0);
 				bool draw = true;
-
-				if (point.y == ineq.y){
-					std::cout << point.y << std::endl;
-				}
 
 				switch (sign){
 				case 0: // >
@@ -141,30 +255,32 @@ void Graph::render(){
 				}
 
 				if (draw){
-					glColor3f(x,point.y, 0.5);
+					points.push_back(point.y);
 
-					if (v.first.find("x") != -1 && v.first.find("y") == -1)
-						glVertex3d(x, (double)(point.y), 0);
-
-					if (v.first.find("y") != -1 && v.first.find("x") == -1)
-						glVertex3d((double)(point.y), x, 0);
-				}
-		}
-
-		// This code is slow and needs to be optimized
-		if (v.first.find("x") != -1 && v.first.find("y") != -1){
-			for (double x = -cx-total_x-scale; x <= -cx+total_x+scale; x+=fineness){
-				for (double y = -cy-total_x; y <= -cy+total_y; y+=fineness*2){
-					Point point = get_point(v.first, x, y);
 					glColor3f(x,point.y, 0.5);
 
 					glVertex3d(x, (double)(point.y), 0);
 				}
 			}
 		}
-
-		glEnd();
 	}
+
+	// Play sound
+	audio.play(audio.find_pitch(points));
+
+	glEnd();
+
+	}
+
+//		std::cout << "From caller :: " << v.first << std::endl;
+//
+//		pthread_create(&threads[i], 0, draw_graph, (void*)&v.first);
+//
+//		i++;
+
+//	for (i = 0; i < functions.size(); i++){
+//		pthread_join(threads[i], 0);
+//	}
 }
 //	std::cout << scale << std::endl;
 //		for (double x = -total_x+1; x < total_x; x+=fineness){
@@ -185,15 +301,18 @@ void Graph::render(){
 //}
 
 
+// Get the total calculated total x
 int Graph::get_total_x(){
 	return total_x;
 }
 
+// Get the total calculated total y
 int Graph::get_total_y(){
 	return total_y;
 }
 
-Graph::Point Graph::get_point(string f, double x, double y){
+// Use Lua to calculate the value of a function
+Graph::Point get_point(std::string f, double x, double y){
 	lua_pushnumber(i.get_state(), x);
 	lua_setglobal(i.get_state(), "x");
 	lua_pushnumber(i.get_state(), y);
@@ -210,7 +329,11 @@ Graph::Point Graph::get_point(string f, double x, double y){
 	}
 
 	lua_pop(i.get_state(), -1);
+	lua_pop(i.get_state(), -1);
 
+// f = math.pow(x,3) > 0
+// c = [r,g,b]
+// This code is to set the color of the graph
 //	double colors[3];
 //
 //	lua_getglobal(i.get_state(), "c");

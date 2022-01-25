@@ -26,7 +26,6 @@ int main(){
 	Window wind(500, 500, "Hello OpenGL");
 	Interpreter i(true);
 	Graph g(conf);
-	Audio a;
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Switch to line mode to make it so that GL_TRIANGLE_STRIP (connected line) and GL_TRIANGLE_FAN (filled) create nicer graphs
 	glCullFace(GL_FRONT_AND_BACK); // Cull some faces
