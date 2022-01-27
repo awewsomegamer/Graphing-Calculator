@@ -92,6 +92,7 @@ void Config::read(std::string file){
 	read_type("scale_speed", scale_speed);
 	read_type("fineness", fineness);
 	read_type("start_zoom", start_zoom);
+	read_type("volume", volume);
 
 	read_type("default_theme", default_theme);
 	read_type("move_camera_left", move_camera_left);
@@ -107,4 +108,5 @@ void Config::read(std::string file){
 
 	read_type("show_grid", show_grid);
 	read_type("use_theme", use_theme);
+	read_type("play_sounds", play_sounds);
 }

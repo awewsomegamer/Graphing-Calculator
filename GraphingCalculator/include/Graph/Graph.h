@@ -8,9 +8,9 @@
 struct Point{
 	double x;
 	double y;
-	double r;
-	double g;
-	double b;
+	int r;
+	int g;
+	int b;
 	bool custom_color = false;
 	bool has_inequality = false;
 	bool inequality_result;

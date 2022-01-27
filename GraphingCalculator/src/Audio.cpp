@@ -5,6 +5,29 @@
 
 // Implement some sort of clean up mechanism for sound files
 
+// Define mutex to be able to synchronize threads
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+std::vector<ALuint> sources;
+ALuint buffer;
+
+void Audio::cleanup(){
+	for (unsigned int i = 0; i < sources.size(); i++){
+		ALuint source = sources[i];
+
+		ALint playing;
+		alGetSourcei(source, AL_SOURCE_STATE, &playing);
+
+		if (playing == AL_STOPPED){
+			alSourceStop(source);
+			alDeleteSources(1, &source);
+
+			sources.erase(sources.begin()+i);
+			i--;
+		}
+	}
+}
+
 // Initialize OpenAL
 Audio::Audio(){
 	ALCdevice *device;
@@ -23,30 +46,7 @@ Audio::Audio(){
 	}
 
 	alcMakeContextCurrent(context);
-}
 
-// Find a pitch
-double Audio::find_pitch(std::vector<double> values){
-	double total = 0;
-
-	// Total up difference
-	for (int i = 0; i < values.size()-1; i++){
-		double first = values[i];
-		double second = values[i+1];
-
-		double difference = first - second;
-
-		total += difference;
-	}
-
-	// Calculate average difference
-	double avg_difference = total/values.size();
-
-	return avg_difference;
-}
-
-// Play noise on set pitch
-void Audio::play(double pitch){
 	AudioFile<double> file("res/Noise.wav");
 
 	uint8_t channels = file.getNumChannels();
@@ -55,9 +55,6 @@ void Audio::play(double pitch){
 	std::vector<uint8_t> data;
 
 	file.writePCMToBuffer(data);
-
-	ALuint source;
-	ALuint buffer;
 
 	alGenBuffers(1, &buffer);
 
@@ -76,6 +73,35 @@ void Audio::play(double pitch){
 	}
 
 	alBufferData(buffer, format, data.data(), data.size(), sample);
+}
+
+// Find a pitch
+double Audio::find_pitch(std::vector<double> values){
+	double total = 0;
+
+	// Total up difference
+	for (unsigned int i = 0; i < values.size()-1; i++){
+		double first = values[i];
+		double second = values[i+1];
+
+		double difference = first - second;
+
+		total += difference;
+	}
+
+	// Calculate average difference
+	double avg_difference = total/values.size();
+
+	return avg_difference;
+}
+
+// Play noise on set pitch
+void* play_sound(void* arg){
+	pthread_mutex_lock(&mutex);
+
+	double pitch = *(double*)arg;
+
+	ALuint source;
 
 	alGenSources(1, &source);
 
@@ -89,12 +115,18 @@ void Audio::play(double pitch){
 
 	alListenerfv(AL_ORIENTATION, orientation);
 
-	alSourcef(source, AL_PITCH, (int)pitch*100);
+	alSourcef(source, AL_PITCH, (int)15+pitch);
 	alSourcef(source, AL_GAIN, 1);
 	alSource3f(source, AL_POSITION, 0,0,0);
 	alSource3f(source, AL_VELOCITY, 0,0,0);
-	alSourcei(source, AL_LOOPING, AL_TRUE);
+	alSourcei(source, AL_LOOPING, AL_FALSE);
 	alSourcei(source, AL_BUFFER, buffer);
 
+	sources.push_back(source);
+
 	alSourcePlay(source);
+
+	pthread_mutex_unlock(&mutex);
+
+	return 0;
 }

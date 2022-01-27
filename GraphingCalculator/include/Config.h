@@ -23,6 +23,7 @@ public:
 	float scale_speed = 0.01;
 	float fineness = 0.1;
 	float start_zoom = 0.1;
+	float volume = 1;
 
 	int default_theme = 0;
 	int move_camera_left = GLFW_KEY_LEFT;
@@ -39,6 +40,7 @@ public:
 
 	bool show_grid = false;
 	bool use_theme = true;
+	bool play_sounds = false;
 };
 
 #endif

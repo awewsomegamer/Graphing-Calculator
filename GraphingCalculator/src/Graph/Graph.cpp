@@ -8,20 +8,20 @@
 #include <algorithm>
 #include <pthread.h>
 #include <string>
+#include <map>
 
 using namespace std;
 
 // Functions vecto
-std::vector<std::string> functions;
-
-//Define mutex to be able to synchronize threads
-//pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+std::map<std::string, int> functions;
 
 // Variables to be updated
 double fineness = 0;
 double scale = 0.1;
 double cx = 0;
 double cy = 0;
+float volume = 1;
+bool play_sounds = false;
 
 Interpreter i(true);
 Audio audio;
@@ -32,6 +32,8 @@ int total_y = 10;
 // Initialize
 Graph::Graph(Config conf){
 	fineness = conf.fineness;
+	volume = conf.volume;
+	play_sounds = conf.play_sounds;
 }
 
 // Update variables from the main function
@@ -79,9 +81,10 @@ bool Graph::check_render(Point p, int minimizer){
 	return ret;
 }
 
-// Add function to functions vector
+// Add function to functions map (function, 0)
 void Graph::plot(std::string function){
-	functions.push_back(function);
+
+	functions.emplace(function, 0);
 }
 
 // Calculate graphs
@@ -105,49 +108,80 @@ void Graph::render(){
 //	pthread_t threads[functions.size()];
 //
 //	int i = 0;
+
+	std::vector<std::vector<double>> points_v;
+
 	for (auto& v : functions){
 		glBegin(GL_TRIANGLE_STRIP);
 		std::vector<double> points;
 
 		for (double x = -cx-total_x-scale; x <= -cx+total_x+scale; x+=fineness){
-			Point point = get_point(v, x, x);
+			Point point = get_point(v.first, x, x);
 
 			if ((point.has_inequality && point.inequality_result) || !(point.has_inequality)){
-				points.push_back(point.y);
-
-				glColor3f(x,point.y, 0.5);
-
-				if (v.find("x") != -1 && v.find("y") == -1)
-					glVertex3d(x, (double)(point.y), 0);
-
-				if (v.find("y") != -1 && v.find("x") == -1)
-					glVertex3d((double)(point.y), x, 0);
-			}
-	}
-
-	// This code is slow and needs to be optimized
-	if (v.find("x") != -1 && v.find("y") != -1){
-		for (double x = -cx-total_x-scale; x <= -cx+total_x+scale; x+=fineness){
-			for (double y = -cy-total_x; y <= -cy+total_y; y+=fineness*2){
-				Point point = get_point(v, x, y);
-
-				if ((point.has_inequality && point.inequality_result) || !(point.has_inequality)){
+				if (play_sounds)
 					points.push_back(point.y);
 
+				if (point.custom_color)
+					glColor3d(point.r, point.g, point.b);
+				else
 					glColor3f(x,point.y, 0.5);
 
+				if (v.first.find("x") != -1 && v.first.find("y") == -1)
 					glVertex3d(x, (double)(point.y), 0);
+
+				if (v.first.find("y") != -1 && v.first.find("x") == -1)
+					glVertex3d((double)(point.y), x, 0);
+			}
+		}
+
+		// This code is slow and needs to be optimized
+		if (v.first.find("x") != -1 && v.first.find("y") != -1){
+			for (double x = -cx-total_x-scale; x <= -cx+total_x+scale; x+=fineness){
+				for (double y = -cy-total_x; y <= -cy+total_y; y+=fineness*2){
+					Point point = get_point(v.first, x, y);
+
+					if ((point.has_inequality && point.inequality_result) || !(point.has_inequality)){
+						if (play_sounds)
+							points.push_back(point.y);
+
+						if (point.custom_color)
+							glColor3d(point.r, point.g, point.b);
+						else
+							glColor3f(x,point.y, 0.5);
+
+						glVertex3d(x, (double)(point.y), 0);
+					}
 				}
 			}
 		}
+
+		if (play_sounds)
+			points_v.push_back(points);
+
+		glEnd();
 	}
 
-	// Play sound
-	audio.play(audio.find_pitch(points));
+	if (play_sounds){
+		pthread_t threads[points_v.size()];
 
-	glEnd();
+		for (unsigned int i = 0; i < points_v.size(); i++){
+			double pitch = audio.find_pitch(points_v[i]);
+			pthread_create(&threads[i], 0, play_sound, (void*)&pitch);
+		}
 
+		for (unsigned int i = 0; i < points_v.size(); i++){
+			pthread_join(threads[i], 0);
+		}
+
+		audio.cleanup();
 	}
+
+//	for (int i = 0; i < points_v.size(); i++){
+//		double pitch = 0;
+//		audio.play_sound(pitch);
+//	}
+
 
 //		std::cout << "From caller :: " << v.first << std::endl;
 //
@@ -195,9 +229,9 @@ Point Graph::get_point(std::string f, double x, double y){
 	}
 
 	// Seperate equation from inequality, if sign is 6 there is no sign, and color
-	std::string equation = sign == 6 ? f : f.substr(0, sign_loc);
+	std::string equation = sign == 6 ? f.substr(0, (color_property_offset == -1 ? f.size() : color_property_offset)) : f.substr(0, sign_loc);
 	std::string inequality = "f = "+(sign == 6 ? "0" : f.substr(sign_loc+(sign != 6 ? signs[sign].size() : 0), (color_property_offset == -1 ? f.size() : color_property_offset)));
-	std::string color = color_property_offset == -1 ? "" : "c = "+f.substr(color_property_offset);
+	std::string color = color_property_offset == -1 ? "" : f.substr(color_property_offset);
 
 	i.run_line(equation);
 
@@ -274,9 +308,17 @@ Point Graph::get_point(std::string f, double x, double y){
 	p.inequality_result = draw;
 
 	if (color_property_offset != -1){
+		for (auto& c : color)
+			if (c == ':')
+				c = '=';
+			else if (c == '[')
+				c = '{';
+			else if (c == ']')
+				c = '}';
+
 		i.run_line(color);
 
-		lua_getglobal(i.get_state(), "c");
+		lua_getglobal(i.get_state(), "C");
 
 		double colors[3];
 
@@ -286,7 +328,7 @@ Point Graph::get_point(std::string f, double x, double y){
 
 		while (lua_next(i.get_state(), -2)){
 			if (lua_isnumber(i.get_state(), -1)){
-				colors[itt++] = (float)(lua_tonumber(i.get_state(), -1));
+				colors[itt++] = (int)(lua_tonumber(i.get_state(), -1));
 			}
 
 			lua_pop(i.get_state(), 1);
@@ -297,6 +339,7 @@ Point Graph::get_point(std::string f, double x, double y){
 		p.r = colors[0];
 		p.g = colors[1];
 		p.b = colors[2];
+
 		p.custom_color = true;
 	}
 
@@ -305,6 +348,9 @@ Point Graph::get_point(std::string f, double x, double y){
 
 // Setter for functions vector
 void Graph::set_graphs(std::vector<std::string> graphs){
-	functions = graphs;
+	functions.clear();
+
+	for (auto& v : graphs)
+		functions.emplace(v, 0);
 }
 

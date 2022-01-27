@@ -62,7 +62,7 @@ int main(){
 		// TODO: OPTOMIZE G.PLOT(F, M);
 //		g.plot("f = math.pow(x,3) > 0", GL_TRIANGLE_STRIP);
 //		g.plot("f = math.pow(y,2) = 3", GL_TRIANGLE_STRIP);
-//		g.plot("f = math.sin(y) < 0.5", 0);
+//		g.plot("f = math.sin(y) < 0.5");
 //		g.plot("f = math.abs(math.sin(x)*3) != 0", 0);
 //		g.plot("if (x < 2) then f = x else f = 1 end", 0);
 //		g.plot("y = math.pow(x+5,3)+1", GL_TRIANGLE_STRIP);

@@ -7,12 +7,14 @@
 #include <string>
 #include <vector>
 
+void* play_sound(void*);
+
 class Audio{
 public:
 	Audio();
 
-	void play(double pitch);
 	void update();
+	void cleanup();
 
 	double find_pitch(std::vector<double>);
 };
