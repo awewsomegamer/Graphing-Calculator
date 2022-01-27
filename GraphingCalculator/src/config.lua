@@ -15,7 +15,6 @@ start_zoom = 1 -- How far should the camera be zoomed in on launch of the applic
 default_theme = 0 -- The index of the default theme (0 -> amount of themes - 1)
 volume = 1 -- Volume of the program
 
-
 show_grid = false -- Show the grid
 use_theme = true -- Use the themes table 
 play_sounds = false -- Play the average sound of the graph
@@ -30,6 +29,7 @@ play_sounds = false -- Play the average sound of the graph
 --decrease_speed = -- Keycode to decrease the camera speed
 --change_theme_up = -- Keycode move the theme pointer up (0 -> 1)
 --change_theme_down = -- Keycode move the theme pointer down (1 -> 0)
+--reload_graphs = -- The key that reloads the graphs
   
 theme_dark = {0.125,0.125,0.125,    1,1,1} 
 theme1 = {0.1,0.5,1,    1,0,0} 
