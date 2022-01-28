@@ -37,7 +37,7 @@ int main(){
 	s = conf.start_zoom;
 	s_inv = conf.start_zoom*10;
 
-	Window wind(500, 500, "<insert_name_here>");
+	Window wind(500, 500, "CPlusPlotter");
 	Interpreter i(true);
 	Graph g(conf);
 
