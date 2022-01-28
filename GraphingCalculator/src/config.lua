@@ -14,9 +14,9 @@ default_theme = 0 -- The index of the default theme (0 -> amount of themes - 1)
 volume = 1 -- Volume of the program
 
 
-show_grid = false -- Show the grid
-use_theme = true -- Use the themes table 
-play_sounds = false -- Play the average sound of the graph
+show_grid = 0 -- Show the grid (0 false)
+use_theme = 1 -- Use the themes table (1 true)
+play_sounds = 0 -- Play the average sound of the graph (0 false)
 
 --move_camera_left =  -- Keycode to move the camera left
 --move_camera_right = -- Keycode to move the camera right
@@ -30,6 +30,7 @@ play_sounds = false -- Play the average sound of the graph
 --change_theme_down = -- Keycode move the theme pointer down (1 -> 0)
 --reload_graphs = -- Keycode to re-read the graphs.lua file
 
+-- 			  RGB Background        RGB Axis
 theme_dark = {0.125,0.125,0.125,    1,1,1} 
 theme1 = {0.1,0.5,1,    1,0,0} 
 theme2 = {0.1,0.5,1,    0,1,0} 

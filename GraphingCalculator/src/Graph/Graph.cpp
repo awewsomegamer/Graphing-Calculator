@@ -163,7 +163,9 @@ void Graph::render(){
 
 		for (unsigned int i = 0; i < points_v.size(); i++){
 			double pitch = audio.find_pitch(points_v[i]);
-			pthread_create(&threads[i], 0, play_sound, (void*)&pitch);
+			SoundParams params = {pitch, volume};
+
+			pthread_create(&threads[i], 0, play_sound, (void*)&params);
 		}
 
 		for (unsigned int i = 0; i < points_v.size(); i++){

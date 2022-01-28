@@ -99,7 +99,7 @@ double Audio::find_pitch(std::vector<double> values){
 void* play_sound(void* arg){
 	pthread_mutex_lock(&mutex);
 
-	double pitch = *(double*)arg;
+	SoundParams params = *(SoundParams*)arg;
 
 	ALuint source;
 
@@ -115,8 +115,8 @@ void* play_sound(void* arg){
 
 	alListenerfv(AL_ORIENTATION, orientation);
 
-	alSourcef(source, AL_PITCH, (int)15+pitch);
-	alSourcef(source, AL_GAIN, 1);
+	alSourcef(source, AL_PITCH, (int)15+params.pitch);
+	alSourcef(source, AL_GAIN, params.volume);
 	alSource3f(source, AL_POSITION, 0,0,0);
 	alSource3f(source, AL_VELOCITY, 0,0,0);
 	alSourcei(source, AL_LOOPING, AL_FALSE);

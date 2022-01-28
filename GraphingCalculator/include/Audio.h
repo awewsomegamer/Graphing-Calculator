@@ -7,6 +7,11 @@
 #include <string>
 #include <vector>
 
+typedef struct SoundParams{
+	double pitch;
+	float volume;
+};
+
 void* play_sound(void*);
 
 class Audio{
