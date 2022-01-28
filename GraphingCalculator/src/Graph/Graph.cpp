@@ -122,7 +122,7 @@ void Graph::render(){
 				points.push_back(point.y);
 
 			if (point.custom_color)
-				glColor3d(point.r, point.g, point.b);
+				glColor3ub(point.r, point.g, point.b);
 			else
 				glColor3f(x,point.y, 0.5);
 
@@ -143,7 +143,7 @@ void Graph::render(){
 						points.push_back(point.y);
 
 					if (point.custom_color)
-						glColor3d(point.r, point.g, point.b);
+						glColor3ub(point.r, point.g, point.b);
 					else
 						glColor3f(x,point.y, 0.5);
 
