@@ -12,7 +12,7 @@
 
 using namespace std;
 
-// Functions vecto
+// Functions map, int is always 0
 std::map<std::string, int> functions;
 
 // Variables to be updated
@@ -118,21 +118,19 @@ void Graph::render(){
 		for (double x = -cx-total_x-scale; x <= -cx+total_x+scale; x+=fineness){
 			Point point = get_point(v.first, x, x);
 
-			if ((point.has_inequality && point.inequality_result) || !(point.has_inequality)){
-				if (play_sounds)
-					points.push_back(point.y);
+			if (play_sounds)
+				points.push_back(point.y);
 
-				if (point.custom_color)
-					glColor3d(point.r, point.g, point.b);
-				else
-					glColor3f(x,point.y, 0.5);
+			if (point.custom_color)
+				glColor3d(point.r, point.g, point.b);
+			else
+				glColor3f(x,point.y, 0.5);
 
-				if (v.first.find("x") != -1 && v.first.find("y") == -1)
-					glVertex3d(x, (double)(point.y), 0);
+			if (v.first.find("x") != -1 && v.first.find("y") == -1)
+				glVertex3d(x, (double)(point.y), 0);
 
-				if (v.first.find("y") != -1 && v.first.find("x") == -1)
-					glVertex3d((double)(point.y), x, 0);
-			}
+			if (v.first.find("y") != -1 && v.first.find("x") == -1)
+				glVertex3d((double)(point.y), x, 0);
 		}
 
 		// This code is slow and needs to be optimized
@@ -141,17 +139,15 @@ void Graph::render(){
 				for (double y = -cy-total_x; y <= -cy+total_y; y+=fineness*2){
 					Point point = get_point(v.first, x, y);
 
-					if ((point.has_inequality && point.inequality_result) || !(point.has_inequality)){
-						if (play_sounds)
-							points.push_back(point.y);
+					if (play_sounds)
+						points.push_back(point.y);
 
-						if (point.custom_color)
-							glColor3d(point.r, point.g, point.b);
-						else
-							glColor3f(x,point.y, 0.5);
+					if (point.custom_color)
+						glColor3d(point.r, point.g, point.b);
+					else
+						glColor3f(x,point.y, 0.5);
 
-						glVertex3d(x, (double)(point.y), 0);
-					}
+					glVertex3d(x, (double)(point.y), 0);
 				}
 			}
 		}
@@ -230,7 +226,8 @@ Point Graph::get_point(std::string f, double x, double y){
 
 	// Seperate equation from inequality, if sign is 6 there is no sign, and color
 	std::string equation = sign == 6 ? f.substr(0, (color_property_offset == -1 ? f.size() : color_property_offset)) : f.substr(0, sign_loc);
-	std::string inequality = "f = "+(sign == 6 ? "0" : f.substr(sign_loc+(sign != 6 ? signs[sign].size() : 0), (color_property_offset == -1 ? f.size() : color_property_offset)));
+	std::string inequality = "f = "+(sign == 6 ? "0" : f.substr(sign_loc+(signs[sign].size())));
+	inequality = color_property_offset == -1 ? inequality : inequality.substr(0, inequality.find("C"));
 	std::string color = color_property_offset == -1 ? "" : f.substr(color_property_offset);
 
 	i.run_line(equation);
@@ -296,6 +293,9 @@ Point Graph::get_point(std::string f, double x, double y){
 
 		break;
 	}
+
+	if (!draw)
+		result = inequality_d;
 
 	lua_pop(i.get_state(), -1); // Pop inequality_d
 
