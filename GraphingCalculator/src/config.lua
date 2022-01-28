@@ -2,8 +2,6 @@
 --background = {0.1,0.5,1} 
 --axis = {0,0,0} 
 
-  
-
 max_speed = 10 -- How fast the camera can move 
 min_speed = 0.01 -- How slow the camera can move 
 speed_increment = 0.01 -- How fast to increment the position of the camera 
@@ -14,6 +12,7 @@ fineness = 0.1 -- How fine graphs should be graphed
 start_zoom = 1 -- How far should the camera be zoomed in on launch of the application  (0.1 Default)  
 default_theme = 0 -- The index of the default theme (0 -> amount of themes - 1)
 volume = 1 -- Volume of the program
+
 
 show_grid = false -- Show the grid
 use_theme = true -- Use the themes table 
@@ -29,8 +28,8 @@ play_sounds = false -- Play the average sound of the graph
 --decrease_speed = -- Keycode to decrease the camera speed
 --change_theme_up = -- Keycode move the theme pointer up (0 -> 1)
 --change_theme_down = -- Keycode move the theme pointer down (1 -> 0)
---reload_graphs = -- The key that reloads the graphs
-  
+--reload_graphs = -- Keycode to re-read the graphs.lua file
+
 theme_dark = {0.125,0.125,0.125,    1,1,1} 
 theme1 = {0.1,0.5,1,    1,0,0} 
 theme2 = {0.1,0.5,1,    0,1,0} 

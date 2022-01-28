@@ -105,6 +105,7 @@ void Config::read(std::string file){
 	read_type("decrease_speed", decrease_speed);
 	read_type("change_theme_up", change_theme_up);
 	read_type("change_theme_down", change_theme_down);
+	read_type("reload_graphs", reload_graphs);
 
 	read_type("show_grid", show_grid);
 	read_type("use_theme", use_theme);
